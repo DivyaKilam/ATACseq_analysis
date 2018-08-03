@@ -50,15 +50,27 @@ samtools sort -o file.sorted.bam file.bam
 samtools flagstat file.sorted.bam
 samtools index file.sorted.bam
 
-Duplicate reads removed using the Picard tools MarkDuplicates program (http://broadinstitute.github.io/picard/)
+##Duplicate read removalcan be done by
+1. samtools markdup
+first sort the bam file
+then use fixmate to add tags which can later be used by markdup
+samtools fixmate -m file.bam file_fixmate.bam
+samtools sort -o file_positionsort.bam file_fixmate.bam
+samtools markdup file_positionsort.bam file_markdup.bam
+(shows some error and generates file in bytes)
+
+2.Picard tools MarkDuplicates program (http://broadinstitute.github.io/picard/)
 PCR duplicates that are exact copies of DNA fragments can arise during PCR. Since they occur during library preparation they may interfere with the biological signal of interest. PCR duplicates can be removed in Picard's MarkDuplicates.
 module load picard
 M= gives list of duplicates identified.
 Picard is a command line tool for manipulating high-throughput sequencing data in formats such as SAM/BAM.
 MarkDuplicates identifies duplicate reads in SAM or BAM file, where duplicate reads originate from a single fragement of DNA
 
+##Run after sorting the file by samtools
 java -jar picard.jar MarkDuplicates I=in_file.bam O=out_file.bam M=dups.txt REMOVE_DUPLICATES=true
 
+## Index the BAM file
+Index the BAM file that has been produced from picard after removal of PCR duplicates
 
 Peak Calling
 Peak identification- macs2  --nomodel --shift -100 --extsize 200
@@ -67,3 +79,6 @@ differentially accessible peaks identified with edgeR
 
 
 https://github.com/QuKunLab/ATAC-pipe
+
+##DESeq2 // MA plot
+https://bioinformatics.uconn.edu/resources-and-events/tutorials-2/rna-seq-tutorial-with-reference-genome/#
